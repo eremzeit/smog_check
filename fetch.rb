@@ -117,8 +117,10 @@ class TimelineFetcher
   def public_timeline_weibos(client_id, access_token, page)
     update_proxy
 
+    puts "page: #{page}"
     r = RestClient.get('https://api.weibo.com/2/statuses/public_timeline.json', {:params => {:client_id => client_id, :access_token => access_token, :page => page}})
     if (r.code == 200)
+      puts "Status Success: 200"
       data = JSON.parse(r.body)
       statuses = data['statuses'].map do |weibo|
         weibo['fetched_at'] = Time.now.to_i
@@ -126,7 +128,11 @@ class TimelineFetcher
         weibo
       end
       statuses
+    elsif (r.code == 403)
+      puts "We got a 403.  Waiting forever before trying again."
+      sleep(100)
     else
+      puts "We got a non-200 response:"
       puts r.to_str
       nil
     end
@@ -183,8 +189,8 @@ class TimelineFetcher
         @ids.add(id)
       end
 
-      #sleep(40)
       sleep(20)
+      #sleep(10)
     end
 
   end
@@ -202,15 +208,17 @@ class TimelineFetcher
 
       puts "Fetching group of pages..."
       begin
+        puts "current_page: #{current_page}"
         fetched_weibos = public_timeline_weibos(client_id, token, current_page)
+        puts "Fetched a page of #{fetched_weibos.length}"
         weibos += fetched_weibos
       rescue => e
         puts "Error while fetching timeline weibo: \n#{e}\n#{e.backtrace}"
         failed = true
       end
 
-      sleep(1)
       current_page += 1
+      sleep(1)
     end
 
     if weibos.length > 0
@@ -261,9 +269,9 @@ end
 #污染源 #the source of pollution
 #note: rate limiting occurs also at the IP level.
 #
-#
 
 creds = [[client_id1, token1], [client_id2, token2]]
+#proxies = ['http://ec2-52-10-95-176.us-west-2.compute.amazonaws.com:8888']
 proxies = ['http://ec2-52-10-95-176.us-west-2.compute.amazonaws.com:8888', 'http://ec2-52-11-186-242.us-west-2.compute.amazonaws.com:8888', 'http://ec2-52-11-181-167.us-west-2.compute.amazonaws.com:8888', 'http://ec2-52-11-216-78.us-west-2.compute.amazonaws.com:8888', 'http://ec2-52-11-222-51.us-west-2.compute.amazonaws.com:8888']
 query_filters = ['污染', '城市污染', '污染投诉', '污染源', '大气污染', '随手拍黑烟', '随手拍污染', '为环保做点', '有种青年', '救救江豚']
 fetcher = TimelineFetcher.new(creds, query_filters, proxies)
