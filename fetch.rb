@@ -1,7 +1,7 @@
 require 'weibo2'
 require 'json'
 require 'oauth2'
-require 'rest_client'
+require 'rest-client'
 require 'set'
 require 'open-uri'
 require 'date'
@@ -119,7 +119,12 @@ class TimelineFetcher
     update_proxy
 
     puts "page: #{page}"
-    r = RestClient.get('https://api.weibo.com/2/statuses/public_timeline.json', {:params => {:client_id => client_id, :access_token => access_token, :page => page}})
+
+    begin
+      r = RestClient.get('https://api.weibo.com/2/statuses/public_timeline.json', {:params => {:client_id => client_id, :access_token => access_token, :page => page}})
+    rescue RestClient::Exception => e
+      r = e.response
+    end
     if (r.code == 200)
       puts "Status Success: 200"
       data = JSON.parse(r.body)
@@ -130,8 +135,9 @@ class TimelineFetcher
       end
       statuses
     elsif (r.code == 403)
-      puts "We got a 403.  Waiting forever before trying again."
+      puts "We got a 403 unauthorized.  Waiting forever before trying again."
       sleep(100)
+      nil
     else
       puts "We got a non-200 response:"
       puts r.to_str
@@ -202,21 +208,16 @@ class TimelineFetcher
 
     weibos = []
     failed = false
-    while current_page <= max_page || failed
+    while current_page <= max_page && !failed
       p = current_page % @creds.length
       client_id = @creds[p][0]
       token = @creds[p][1]
 
       puts "Fetching group of pages..."
-      begin
-        puts "current_page: #{current_page}"
-        fetched_weibos = public_timeline_weibos(client_id, token, current_page)
-        puts "Fetched a page of #{fetched_weibos.length}"
-        weibos += fetched_weibos
-      rescue => e
-        puts "Error while fetching timeline weibo: \n#{e}\n#{e.backtrace}"
-        failed = true
-      end
+      puts "current_page: #{current_page}"
+      fetched_weibos = public_timeline_weibos(client_id, token, current_page)
+      puts "Fetched a page of #{fetched_weibos.length}"
+      weibos += fetched_weibos
 
       current_page += 1
       sleep(1)
