@@ -18,6 +18,10 @@ mkdir('data/public_timeline/target_weibos')
 mkdir('data/public_timeline/target_weibos/images')
 mkdir('data/public_timeline/target_weibos/json')
 
+mkdir('data/public_timeline/target_test')
+mkdir('data/public_timeline/target_test/images')
+mkdir('data/public_timeline/target_test/json')
+
 $stdout.reopen("fetch.log", "a")
 $stderr.reopen('fetch.log', 'a')
 $stdout.sync = true
