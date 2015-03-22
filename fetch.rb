@@ -11,6 +11,7 @@ def mkdir(path)
 end
 
 mkdir('data')
+mkdir('data/public_timeline')
 mkdir('data/public_timeline/all')
 mkdir('data/public_timeline/all/json')
 mkdir('data/public_timeline/target_weibos')
