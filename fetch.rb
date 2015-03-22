@@ -6,6 +6,16 @@ require 'set'
 require 'open-uri'
 require 'date'
 
+def mkdir(path)
+  Dir.mkdir(path) if !Dir.exists?(path)
+end
+
+mkdir('data')
+mkdir('data/public_timeline/all')
+mkdir('data/public_timeline/all/json')
+mkdir('data/public_timeline/target_weibos')
+mkdir('data/public_timeline/target_weibos/images')
+mkdir('data/public_timeline/target_weibos/json')
 
 #$stdout.reopen("fetch.log", "a")
 #$stdout.sync = true
