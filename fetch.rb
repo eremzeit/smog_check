@@ -18,9 +18,9 @@ mkdir('data/public_timeline/target_weibos')
 mkdir('data/public_timeline/target_weibos/images')
 mkdir('data/public_timeline/target_weibos/json')
 
-#$stdout.reopen("fetch.log", "a")
-#$stdout.sync = true
-#$stderr.reopen('fetch_error.log', 'a')
+$stdout.reopen("fetch.log", "a")
+$stderr.reopen('fetch.log', 'a')
+$stdout.sync = true
 
 #Weibo2::Config.api_key = "2039168936"
 #Weibo2::Config.api_secret = "3cb7d1e9f97010412ff878c4b9886319"
@@ -190,7 +190,7 @@ class TimelineFetcher
         @ids.add(id)
       end
 
-      sleep(20)
+      sleep(30)
       #sleep(10)
     end
 
