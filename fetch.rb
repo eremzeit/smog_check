@@ -177,7 +177,7 @@ class TimelineFetcher
     while true
       puts ""
 
-      weibos = get_page_chunk
+      weibos = get_page_chunk || []
 
       if Set.new(weibos).count != weibos.length
         puts 'Duplicated ids!'
