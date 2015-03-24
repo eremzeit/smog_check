@@ -101,7 +101,7 @@ class TimelineFetcher
       end
 
       img_path
-    rescue e
+    rescue StandardError => e
       puts 'Error while fetching image!'
       puts e
       puts e.backtrace
